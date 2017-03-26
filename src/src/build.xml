@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Build File" basedir="." default="build">
+
+	<!--location of property file -->
+	<property file="${basedir}/build.properties" description="your specific properities for builds" />
+
+	<!-- additional tasks -->
+	<taskdef name="mxmlc" classname="flex.ant.MxmlcTask" classpath="${FLEX_TASKS}" />
+	<taskdef name="compc" classname="flex.ant.CompcTask" classpath="${FLEX_TASKS}" />
+	<taskdef name="asdoc" classname="flex.ant.AsDocTask" classpath="${FLEX_TASKS}" />
+	<!--
+       Build
+   -->
+
+	<target name="build" description="compiles application">
+		<antcall target="init" />
+		<antcall target="compile" />
+		<antcall target="cleanup" />
+	</target>
+
+	<target name="compile" description="Compiles the AIR application to a SWF file and places SWF in a temp directory to be packaged.">
+		<mxmlc file="${SOURCE_DIR}/${APP_NAME}.${APP_EXTENSION}" output="${DEPLOY_DIR}/${APP_NAME}.swf" actionscript-file-encoding="UTF-8" debug="${DEBUG_FLAG}" keep-generated-actionscript="true" incremental="true">
+			<!-- Get default compiler options.-keep-as3-metadata+=Inject -keep-as3-metadata+=PostConstruc -->
+			<keep-as3-metadata name="Inject"/>
+            <keep-as3-metadata name="PostConstruc"/>
+			<load-config filename="${FLEX_HOME}/frameworks/flex-config.xml" />
+			<!-- List of path elements that form the roots of ActionScript
+		            class hierarchies. -->
+			<source-path path-element="${FLEX_HOME}/frameworks" />
+  		    <source-path path-element="${SOURCE_DIR}" />
+            <!-- List of SWC files or directories that contain SWC files. -->
+	    <!--	<compiler.library-path dir="${FLEX_HOME}/frameworks" append="true">
+				<include name="libs" />
+				<include name="../bundles/{locale}" /> 
+			</compiler.library-path>
+		-->	
+            <!-- Set size of output SWF file. -->
+			<default-size width="1000" height="580" />
+		</mxmlc>
+	</target>
+
+
+	<target name="init" depends="clean" description="Cleans the deploy file">
+		<mkdir dir="${BUILD_DIR}" />
+		<mkdir dir="${RELEASE_DIR}" />
+	</target>
+
+	<target name="clean" description="Cleans up old files.">
+		<delete dir="${BUILD_DIR}" failOnError="false" includeEmptyDirs="true" />
+		<delete dir="${RELEASE_DIR}" failOnError="false" includeEmptyDirs="true" />
+	</target>
+
+	<target name="cleanup" description="Cleans up old files.">
+		<delete dir="${BUILD_DIR}" failOnError="false" includeEmptyDirs="true" />
+	</target>
+
+</project>
